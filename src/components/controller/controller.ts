@@ -1,27 +1,36 @@
 import AppLoader from './appLoader';
+import { Endpoint } from '../../types/enums';
+import type { ResponseCallback } from '../../types/app';
+import type { INewsApiArticlesResponse, INewsApiSourcesResponse } from '../../types/news-api';
 
 class AppController extends AppLoader {
-    getSources(callback) {
-        super.getResp(
+    public getSources(callback: ResponseCallback<INewsApiSourcesResponse>): void {
+        super.getResp<INewsApiSourcesResponse>(
             {
-                endpoint: 'sources',
+                endpoint: Endpoint.Sources,
             },
             callback
         );
     }
 
-    getNews(e, callback) {
-        let target = e.target;
-        const newsContainer = e.currentTarget;
+    public getNews(event: MouseEvent, callback: ResponseCallback<INewsApiArticlesResponse>): void {
+        const newsContainer: EventTarget | null = event.currentTarget;
 
-        while (target !== newsContainer) {
+        if (!(newsContainer instanceof Element)) {
+            return;
+        }
+
+        let target: EventTarget | null = event.target;
+
+        while (target instanceof Element && target !== newsContainer) {
             if (target.classList.contains('source__item')) {
-                const sourceId = target.getAttribute('data-source-id');
-                if (newsContainer.getAttribute('data-source') !== sourceId) {
+                const sourceId: string | null = target.getAttribute('data-source-id');
+
+                if (sourceId && newsContainer.getAttribute('data-source') !== sourceId) {
                     newsContainer.setAttribute('data-source', sourceId);
-                    super.getResp(
+                    super.getResp<INewsApiArticlesResponse>(
                         {
-                            endpoint: 'everything',
+                            endpoint: Endpoint.Everything,
                             options: {
                                 sources: sourceId,
                             },
@@ -29,9 +38,11 @@ class AppController extends AppLoader {
                         callback
                     );
                 }
+
                 return;
             }
-            target = target.parentNode;
+
+            target = target.parentElement;
         }
     }
 }

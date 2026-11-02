@@ -24,13 +24,25 @@ export interface INewsApiSource {
     country: string;
 }
 
-export interface INewsApiSourcesResponse {
+export interface INewsApiBaseResponse {
+    status: string;
+}
+
+export interface INewsApiSourcesResponse extends INewsApiBaseResponse {
     status: 'ok';
     sources: INewsApiSource[];
 }
 
-export interface INewsApiArticlesResponse {
+export interface INewsApiArticlesResponse extends INewsApiBaseResponse {
     status: 'ok';
     totalResults: number;
     articles: INewsApiArticle[];
 }
+
+export interface INewsApiErrorResponse extends INewsApiBaseResponse {
+    status: 'error';
+    code: string;
+    message: string;
+}
+
+export type TNewsApiResponse = INewsApiSourcesResponse | INewsApiArticlesResponse | INewsApiErrorResponse;

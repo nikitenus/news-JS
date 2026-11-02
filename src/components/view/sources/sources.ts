@@ -1,20 +1,22 @@
 import './sources.css';
+import type { INewsApiSource } from '../../../types/news-api';
+import { cloneTemplate, getElement } from '../../../utils/dom';
 
 class Sources {
-    draw(data) {
-        const fragment = document.createDocumentFragment();
-        const sourceItemTemp = document.querySelector('#sourceItemTemp');
+    public draw(data: readonly INewsApiSource[]): void {
+        const fragment: DocumentFragment = document.createDocumentFragment();
+        const sourceItemTemp: HTMLTemplateElement = getElement<HTMLTemplateElement>(document, '#sourceItemTemp');
 
-        data.forEach((item) => {
-            const sourceClone = sourceItemTemp.content.cloneNode(true);
+        data.forEach((item: INewsApiSource): void => {
+            const sourceClone: DocumentFragment = cloneTemplate(sourceItemTemp);
 
-            sourceClone.querySelector('.source__item-name').textContent = item.name;
-            sourceClone.querySelector('.source__item').setAttribute('data-source-id', item.id);
+            getElement<HTMLElement>(sourceClone, '.source__item-name').textContent = item.name;
+            getElement<HTMLElement>(sourceClone, '.source__item').setAttribute('data-source-id', item.id);
 
             fragment.append(sourceClone);
         });
 
-        document.querySelector('.sources').append(fragment);
+        getElement<HTMLElement>(document, '.sources').append(fragment);
     }
 }
 
